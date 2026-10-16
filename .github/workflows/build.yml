@@ -18,10 +18,14 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm install --legacy-peer-deps
+          npx cap copy ios
 
-      - name: Copy Capacitor Assets
-        run: npx cap copy ios
+      - name: Setup CocoaPods
+        run: |
+          cd ios/App
+          pod install
 
       - name: Build iOS App
         run: |
