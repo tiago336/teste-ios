@@ -18,21 +18,17 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: |
-          npm install --legacy-peer-deps
-          npx cap copy ios
+        run: npm install --legacy-peer-deps
 
-      - name: Setup CocoaPods
+      - name: Copy Capacitor Web Assets
+        run: npx cap copy ios
+
+      - name: Build App via Xcode
         run: |
           cd ios/App
-          pod install
-
-      - name: Build iOS App
-        run: |
-          cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath App.xcarchive CODE_SIGNING_ALLOWED=NO
+          xcodebuild build -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" BUILD_DIR=build
           mkdir -p Payload
-          cp -r App.xcarchive/Products/Applications/App.app Payload/
+          cp -r build/Release-iphoneos/App.app Payload/
           zip -r TesteApp.ipa Payload
 
       - name: Upload IPA Artifact
